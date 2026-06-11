@@ -85,7 +85,7 @@ def ingresar_servicio():
     else:
         print(f"Su presupuesto disponible es de {presupuesto}, el costo del servicio a contratar es de {costo}")
         
-    observacion = input("Observación: ")
+    observacion = input("Observación: ")  
 
     servicio = {
         "RUT": rut”, "Código del servicio": cod, "Nombre del servicio": nom_ser, "Área de consultoría": area,
