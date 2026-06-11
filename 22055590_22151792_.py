@@ -14,12 +14,6 @@ def ingresar_cliente():
     return cliente
 
 def ingresar_servicio():
-<<<<<<< Updated upstream
-    cod = input("service code:  ")
-    nombre_serv = input("Nombre serv")
-    costo = int(input("Costo:   "))
-    servicio = [cod, nombre_serv, "Area","Consultor", "10 hrs", costo, "Sin observaciones"]
-=======
     print("--- INGRESO DE SERVICIOS DE CONSULTORÍA ---")
     #pasaremos a verificar que el usuario este registrado, para saber cuanto es su presupuesto
     rut= input("Ingrese el Rut del cliente que contrata el servicio:")
@@ -66,7 +60,6 @@ def ingresar_servicio():
     }
     guardar_dato(ARCHIVO_SERVICIOS, servicio)
     print("¡Servicio contratado y registrado con éxito!")
->>>>>>> Stashed changes
 
     return servicio
 
