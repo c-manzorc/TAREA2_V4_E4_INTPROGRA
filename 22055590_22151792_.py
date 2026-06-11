@@ -14,10 +14,59 @@ def ingresar_cliente():
     return cliente
 
 def ingresar_servicio():
+<<<<<<< Updated upstream
     cod = input("service code:  ")
     nombre_serv = input("Nombre serv")
     costo = int(input("Costo:   "))
     servicio = [cod, nombre_serv, "Area","Consultor", "10 hrs", costo, "Sin observaciones"]
+=======
+    print("--- INGRESO DE SERVICIOS DE CONSULTORÍA ---")
+    #pasaremos a verificar que el usuario este registrado, para saber cuanto es su presupuesto
+    rut= input("Ingrese el Rut del cliente que contrata el servicio:")
+    detec = open(ARCHIVO_CLIENTES, "r")
+    for linea in detec:
+        datos = linea.strip().split(";")
+        if datos[0] == rut:
+            presupuesto = float(datos[7])
+            break
+        else:
+            print("Error: El Rut del cliente no existe en el sistema.")
+            detec.close()
+            return
+    detec.close()
+    
+    #el usuario debera ingresar los datos del servicio que quiere costear
+    cod = input("Introduzca el Código del servicio: ")
+    nom_ser = input("Introduzca el Nombre del servicio: ")
+    area = input("Introduzaca el Área de consultoría: ")
+    consultor = input("Introduzaca el Consultor responsable: ")
+    duracion = input("Introduzaca la Duración estimada (ej: 3 meses): ")
+    
+
+    while True:
+        costo1 = int(input("Costo del servicio:$ "))
+        if costo1.isdigit(): 
+            costo=float(costo1)
+            break
+        else:
+            print("ERROR, ingrese un valor numérico válido (ej:50000): $")
+
+    if costo > presupuesto:
+        print(f"El servicio no se puede ejecutar debido a que  el costo{costo} supera su presupuesto{presupuesto}")
+        return
+    else:
+        print(f"Su presupuesto disponible es de {presupuesto}, el costo del servicio a contratar es de {costo}")
+        
+    observacion = input("Observación: ")  
+
+    servicio = {
+        "RUT": rut, "Código del servicio": cod, "Nombre del servicio": nom_ser, "Área de consultoría": area,
+        "Consultor responsable": consultor, "Duracion estimada":duracion, "Costo del servicio": costo,
+        "Observacion": observacion
+    }
+    guardar_dato(ARCHIVO_SERVICIOS, servicio)
+    print("¡Servicio contratado y registrado con éxito!")
+>>>>>>> Stashed changes
 
     return servicio
 
