@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 import csv
-
+ARCHIVO_SERVICIOS="servicios.txt"
 def ingresar_cliente():
     print("Ingreso de cliente nuevo:")
     rut = input("RUT:   ")
@@ -13,13 +13,53 @@ def ingresar_cliente():
 
     return cliente
 
-def ingresar_servicio():
-    cod = input("service code:  ")
-    nombre_serv = input("Nombre serv")
-    costo = int(input("Costo:   "))
-    servicio = [cod, nombre_serv, "Area","Consultor", "10 hrs", costo, "Sin observaciones"]
 
-    return servicio
+def ingresar_servicio():
+    print("\n--- INGRESO DE SERVICIOS DE CONSULTORÍA ---")
+    cod = input("Código del servicio: ")
+    nom_ser = input("Nombre del servicio: ")
+    area = input("Área de consultoría: ")
+    consultor = input("Consultor responsable: ")
+    duracion = input("Duración estimada (ej: 3 meses): ")
+
+    while True:
+        costo1 = input("Costo del servicio:$ ")
+        if costo1.isdigit():
+            costo=float(costo1)
+            break
+        else:
+            print("ERROR, ingrese un numérico válido (ej:50000): $")
+
+       rut_cliente = input("Ingrese el Rut del cliente que contrata el servicio: ")
+    
+    # Abrimos el archivo y buscamos directamente
+    with open(ARCH_CLIENTES, "r", encoding="utf-8") as f:
+        for linea in f:
+            datos = linea.strip().split(";")
+            if datos[0] == rut_cliente:
+                # Si lo encuentra, guardamos el presupuesto y salimos del bucle
+                presupuesto = float(datos[7])
+                break
+        else:
+            # El 'else' del 'for' se ejecuta SOLO si el bucle terminó y NO encontró el RUT
+            print("Error: El Rut del cliente no existe en el sistema.")
+            return
+    # Aplicación de la Restricción del enunciado
+
+
+    if costo > presupuesto:
+        print(f"El servicio no se puede ejecutar debido a que  el costo{costo} supera su presupuesto{presupuesto}")
+        return
+    observacion = input("Observación: ")
+
+    servicio = {
+        "RUT": rut_cliente”, "cod": codigo, "nom_ser": nombre, "area": area,
+        "consultor": consultor, "duracion":duracion, "costo": costo,
+        "observacion": observacion
+    }
+    guardar_dato(ARCHIVO_SERVICIOS, servicio)
+    print("¡Servicio contratado y registrado con éxito!")
+
 
 def visualizar_cliente(lista_clientes):
     print("\n--- VISUALIZACIÓN DE CLIENTES ---")
