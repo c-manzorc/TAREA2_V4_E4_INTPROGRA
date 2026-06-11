@@ -1,25 +1,100 @@
 import matplotlib.pyplot as plt
 import os
 import csv
+ARCHIVO_SERVICIOS="servicios.txt"
+ARCHIVO_CLIENTES="clientes.txt"
+
+#Este es un iniciador del archivo tanto de clientes como servicios
+def inicializar_archivos():
+    if not os.path.exists(ARCHIVO_CLIENTES):
+        with open(ARCHIVO_CLIENTES, "w") as f:
+            pass
+    if not os.path.exists(ARCHIVO_SERVICIOS):
+        with open(ARCHIVO_SERVICIOS, "w") as f:
+            pass
+#este es un auxiliar para guardar los diccionarios dentro de los archivos
+def guardar_dato(nombre_archivo, diccionario):
+    # Convertimos los valores del diccionario a una lista de textos y los unimos con ";"
+    valores = [str(val) for val in diccionario.values()]
+    linea = ";".join(valores) + "\n"
+    with open(nombre_archivo, "a", encoding="utf-8") as f:
+        f.write(linea)
 
 def ingresar_cliente():
-    print("Ingreso de cliente nuevo:")
-    rut = input("RUT:   ")
-    nombre = input("Nombre: ")
-    apellido_p = input("Apellido paterno:   ")
-    apellido_m = input("Apellido materno:   ")
-    presupuesto = int(input("Presupuesto disponible:    "))
-    cliente = [rut, nombre, apellido_p, apellido_m, "9999","correo@gmail.com", "Empresa SPA", presupuesto]
+    print("\n--- INGRESO DE DATOS DE CLIENTE ---")
+    #utilizamos el input para ingresar los datos del cliente
+    rut = input("Introduzca su Rut: ")
+    nombres = input("Introduzca su Nombres: ")
+    apellido_p = input("Introduzca su Apellido paterno: ")
+    apellido_m = input("Introduzca su Apellido materno: ")
+    telefono = input("Introduzca su Teléfono: ")
+    email = input("Introduzca su Email: ")
+    empresa = input("Introduzca su Empresa: ")
+    #
+    while True:
+        presupuesto = input("Presupuesto disponible: ")
+        if presupuesto.isdigit(): #analiza los numeros ingresados y verifica que sean enteros
+            presupuesto=float(presupuesto)
+            break #interrumpe el ciclo del presupuesto al ser valido
+        else:#en caso de no ser valido mostraria el siguiente mensaje
+            print("ERROR, ingrese un valor numérico válido.")
+    #en este diccionario estan las claves con los valores que corresponden a los datos del cliente
+    cliente = {
+        "rut": rut, "nombres": nombres, "apellido_paterno": apellido_p,
+        "apellido_materno": apellido_m, "telefono": telefono, "email": email,
+        "empresa": empresa, "presupuesto": presupuesto
+    }
+    guardar_dato(ARCHIVO_CLIENTES, cliente)#aqui se guarda el diccionario "cliente" dentro del ARCHIVO_CLIENTES
+    print("¡Cliente registrado con éxito!")
 
-    return cliente
 
 def ingresar_servicio():
-    cod = input("service code:  ")
-    nombre_serv = input("Nombre serv")
-    costo = int(input("Costo:   "))
-    servicio = [cod, nombre_serv, "Area","Consultor", "10 hrs", costo, "Sin observaciones"]
+    print("--- INGRESO DE SERVICIOS DE CONSULTORÍA ---")
+    #pasaremos a verificar que el usuario este registrado, para saber cuanto es su presupuesto
+    rut= input("Ingrese el Rut del cliente que contrata el servicio:")
+    detec = open(ARCHIVO_CLIENTES, "r")
+    for linea in detec:
+        datos = linea.strip().split(";")
+        if datos[0] == rut:
+            presupuesto = float(datos[7])
+            break
+    detec.close()
+        else:
+            print("Error: El Rut del cliente no existe en el sistema.")
+            return
+    
+    #el usuario debera ingresar los datos del servicio que quiere costear
+    cod = input("Introduzca el Código del servicio: ")
+    nom_ser = input("Introduzca el Nombre del servicio: ")
+    area = input("Introduzaca el Área de consultoría: ")
+    consultor = input("Introduzaca el Consultor responsable: ")
+    duracion = input("Introduzaca la Duración estimada (ej: 3 meses): ")
+     
 
-    return servicio
+    while True:
+        costo1 = (input("Costo del servicio:$ ")
+        if costo1.isdigit(): 
+            costo=float(costo1)
+            break
+        else:
+            print("ERROR, ingrese un valor numérico válido (ej:50000): $")
+
+    if costo > presupuesto:
+        print(f"El servicio no se puede ejecutar debido a que  el costo{costo} supera su presupuesto{presupuesto}")
+        return
+    else:
+        print(f"Su presupuesto disponible es de {presupuesto}, el costo del servicio a contratar es de {costo}")
+        
+    observacion = input("Observación: ")
+
+    servicio = {
+        "RUT": rut”, "Código del servicio": cod, "Nombre del servicio": nom_ser, "Área de consultoría": area,
+        "Consultor responsable": consultor, "Duracion estimada":duracion, "Costo del servicio": costo,
+        "Observacion": observacion
+    }
+    guardar_dato(ARCHIVO_SERVICIOS, servicio)
+    print("¡Servicio contratado y registrado con éxito!")
+
 
 def visualizar_cliente(lista_clientes):
     print("\n--- VISUALIZACIÓN DE CLIENTES ---")
