@@ -4,7 +4,32 @@ import csv
 ARCHIVO_SERVICIOS="servicios.txt"
 ARCHIVO_CLIENTES="clientes.txt"
 
-#Este es un iniciador del archivo tanto de clientes como servicios
+class Cliente():
+    """ 
+        Esta clase guarda informacion del cliente
+    """
+
+    def __init__(self, rut, nombres, apellido_paterno, apellido_materno, telefono, email, empresa, presupuesto):
+        self.rut = rut
+        self.nombres = nombres
+        self.apellido_paterno = apellido_paterno
+        self.apellido_materno = apellido_materno
+        self.telefono = telefono
+        self.email = email
+        self.empresa = empresa
+        self.presupuesto = presupuesto
+
+class Servicio():
+    def __init__(self, cod, nom_ser, area, consultor, duracion, costo, observacion, rut_cliente):
+        self.codigo = cod
+        self.nombre = nom_ser
+        self.area = area
+        self.consultor = consultor
+        self.duracion = duracion
+        self.costo = costo
+        self.observacion = observacion
+        self.rut_cliente = rut_cliente
+
 def inicializar_archivos():
     if not os.path.exists(ARCHIVO_CLIENTES):
         with open(ARCHIVO_CLIENTES, "w") as f:
@@ -12,13 +37,7 @@ def inicializar_archivos():
     if not os.path.exists(ARCHIVO_SERVICIOS):
         with open(ARCHIVO_SERVICIOS, "w") as f:
             pass
-#este es un auxiliar para guardar los diccionarios dentro de los archivos
-def guardar_dato(nombre_archivo, diccionario):
-    # Convertimos los valores del diccionario a una lista de textos y los unimos con ";"
-    valores = [str(val) for val in diccionario.values()]
-    linea = ";".join(valores) + "\n"
-    with open(nombre_archivo, "a", encoding="utf-8") as f:
-        f.write(linea)
+
 
 def ingresar_cliente():
     print("Ingrese los siguientes datos")
@@ -37,13 +56,13 @@ def ingresar_cliente():
             break # Interrumpe el ciclo del presupuesto al ser valido
         except ValueError:
             print("ERROR, ingrese un valor numérico válido.")
-    #en este diccionario estan las claves con los valores que corresponden a los datos del cliente
-    cliente = {
-        "rut": rut, "nombres": nombres, "apellido_paterno": apellido_p,
-        "apellido_materno": apellido_m, "telefono": telefono, "email": email,
-        "empresa": empresa, "presupuesto": presupuesto
-    }
-    guardar_dato(ARCHIVO_CLIENTES, cliente)#aqui se guarda el diccionario "cliente" dentro del ARCHIVO_CLIENTES
+    nuevo_cliente = Cliente(rut, nombres, apellido_p, apellido_m, telefono, email, empresa, presupuesto)
+    
+    linea_texto = f"{nuevo_cliente.rut};{nuevo_cliente.nombres};{nuevo_cliente.apellido_paterno};{nuevo_cliente.apellido_materno};{nuevo_cliente.telefono};{nuevo_cliente.email};{nuevo_cliente.empresa};{nuevo_cliente.presupuesto}\n"
+
+    with open(ARCHIVO_CLIENTES, "a", encoding="utf-8") as f:
+        f.write(linea_texto)
+        
     print("¡Cliente registrado con éxito!")
 
 
@@ -91,15 +110,17 @@ def ingresar_servicio():
         
     observacion = input("Observación: ")  
 
-    servicio = {
-        "RUT: ": rut, "Código del servicio": cod, "Nombre del servicio": nom_ser, "Área de consultoría": area,
-        "Consultor responsable": consultor, "Duracion estimada":duracion, "Costo del servicio": costo1,
-        "Observacion": observacion
-    }
-    guardar_dato(ARCHIVO_SERVICIOS, servicio)
+    nuevo_servicio = Servicio(cod, nom_ser, area, consultor, duracion, costo1, observacion, rut)
+    
+    # 2. Armamos la línea de texto extrayendo cada atributo del objeto
+    linea_texto = f"{nuevo_servicio.codigo};{nuevo_servicio.nombre};{nuevo_servicio.area};{nuevo_servicio.consultor};{nuevo_servicio.duracion};{nuevo_servicio.costo};{nuevo_servicio.observacion};{nuevo_servicio.rut_cliente}\n"
+    
+    # 3. Guardamos esa línea directamente en el archivo
+    with open(ARCHIVO_SERVICIOS, "a", encoding="utf-8") as f:
+        f.write(linea_texto)
     print("¡Servicio contratado y registrado con éxito!")
 
-    return servicio
+
 
 def visualizar_cliente(archivo=ARCHIVO_CLIENTES):
     print("\n--- VISUALIZACIÓN DE CLIENTES ---")
