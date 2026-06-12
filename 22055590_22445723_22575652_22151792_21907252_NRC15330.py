@@ -191,7 +191,7 @@ def visualizar_servicios(archivo=ARCHIVO_SERVICIOS):
             for linea in lineas:
                 datos = linea.strip().split(";")
                 if len(datos) == 8:
-                    rut, codigo, nombre, area, consultor, duracion, costo, observacion = datos
+                    codigo, nombre, area, consultor, duracion, costo, observacion, rut = datos
                     print(f"Rut: {rut}")
                     print(f"Código del servicio: {codigo}")
                     print(f"Nombre del servicio: {nombre}")
