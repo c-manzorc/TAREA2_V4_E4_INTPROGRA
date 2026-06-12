@@ -38,6 +38,9 @@ class Servicio():
         self.rut_cliente = rut_cliente
 
 def inicializar_archivos():
+    """
+        Crea los archivos de texto si no existen en el sistema.
+    """
     if not os.path.exists(ARCHIVO_CLIENTES):
         with open(ARCHIVO_CLIENTES, "w") as f:
             pass
@@ -47,6 +50,10 @@ def inicializar_archivos():
 
 
 def ingresar_cliente():
+    """ 
+    Solicita los datos de un nuevo cliente y los guarda en el archivo.
+    Verifica que el presupuesto reciba un numero entero.
+    """
     print("Ingrese los siguientes datos")
     #utilizamos el input para ingresar los datos del cliente
     rut = input("Rut: ")
@@ -56,12 +63,12 @@ def ingresar_cliente():
     telefono = input("Teléfono: ")
     email = input("Email: ")
     empresa = input("Empresa: ")
-    #
+
     while True:
         try:
             presupuesto = float(input("Presupuesto disponible: "))
             break # Interrumpe el ciclo del presupuesto al ser valido
-        except ValueError:
+        except ValueError: # Si el usuario ingresa texto en lugar de un número
             print("ERROR, ingrese un valor numérico válido.")
     nuevo_cliente = Cliente(rut, nombres, apellido_p, apellido_m, telefono, email, empresa, presupuesto)
     
@@ -74,6 +81,13 @@ def ingresar_cliente():
 
 
 def ingresar_servicio():
+    """
+    Solicita los datos de un servicio. Verifica que el rut corresponda al de
+    un cliente ya registrado, verifica que el presupuesto y tiempo de ejecución
+    del servicio se ingresen como valores enteros validos, y que el costo
+    sea menor o igual al presupuesto.
+    Ingresa los datos al archivo de servicios.
+    """
     print("Ingrese los siguientes datos")
     #pasaremos a verificar que el usuario este registrado, para saber cuanto es su presupuesto
     rut= input("Ingrese el Rut del cliente que contrata el servicio:")
@@ -99,7 +113,7 @@ def ingresar_servicio():
         try:
             duracion = int(input("Introduzaca la Duración estimada en meses: "))
             break
-        except ValueError:
+        except ValueError: #Si no se ingresa un entero
             print("Ingrese una respuesta valida.")
 
     while True:
@@ -130,6 +144,11 @@ def ingresar_servicio():
 
 
 def visualizar_cliente(archivo=ARCHIVO_CLIENTES):
+    """
+    Si el archivo de clientes existe, lo abre y con un for lo recorre para sacar
+    los datos y mostrarlos al usuario en orden.
+    Si no existe, retorna al menu principal enviando un mensaje segun el error.
+        """
     print("\n--- VISUALIZACIÓN DE CLIENTES ---")
     try:
         with open(archivo, "r", encoding="utf-8") as f:
@@ -153,6 +172,11 @@ def visualizar_cliente(archivo=ARCHIVO_CLIENTES):
         print("El archivo de clientes no existe. Ingrese un clliente.")
 
 def visualizar_servicios(archivo=ARCHIVO_SERVICIOS):
+    """
+    Esta funcion revisa que exista el archivo de servicios, si existe, lo lee 
+    y recorre con un for para mostrar los servicios al usuario.
+    Si no existe, retorna un mensaje de error.
+    """
     print("\n========================================")
     print("Visualización de los datos de las consultorías")
     print("========================================\n")
@@ -181,37 +205,51 @@ def visualizar_servicios(archivo=ARCHIVO_SERVICIOS):
                     continue
     except FileNotFoundError:
         print("Error: El archivo de servicios no existe. Registre un servicio primero.")
-    except Exception as e:
+    except Exception as e: # captura cualquier otro error inesperado del sistema
         print(f"Ocurrió un error inesperado al leer el archivo: {e}")
 
 
     
 def mostrar_grafico(archivo=ARCHIVO_CLIENTES):
+    """
+    Genera un gráfico de barras interactivo con los presupuestos de los clientes.
+    Verifica que exista el archivo clientes, si es así, lo lee y recopila tres datos,
+    guarda el nombre en la lista para el eje x, guarda el presupuesto en la lista del eje y.
+    Si no existe, imprime un error y pide ingresar clientes.
+    """
     ejex_nombres = []
     ejey_presp = []
 
-    with open(archivo, "r", encoding="utf-8") as arch:
-        lineas = arch.readlines()
-        if len(lineas) == 0:
-            print("No hay clientes para generar el gráfico.")
-            return
+    try:
+        with open(archivo, "r", encoding="utf-8") as arch:
+            lineas = arch.readlines()
+            if len(lineas) == 0:
+                print("No hay clientes para generar el gráfico.")
+                return
 
-        for linea in lineas:
-            datos = linea.strip().split(";")
-            if len(datos) >= 8:
-                nombre = f"{datos[1]} {datos[2]}"
-                ejex_nombres.append(nombre)
-                ejey_presp.append(float(datos[7]))
+            for linea in lineas:
+                datos = linea.strip().split(";")
+                if len(datos) >= 8:
+                    nombre = f"{datos[1]} {datos[2]}"
+                    ejex_nombres.append(nombre)
+                    ejey_presp.append(float(datos[7]))
 
-    plt.figure(figsize = (10,6))
-    plt.bar(ejex_nombres, ejey_presp, color = "steelblue")
-    plt.title("Grafico de Barras")
-    plt.ylabel("Presupuesto disponible")
-    plt.xlabel("Clientes")
-    plt.tight_layout()
-    plt.show()
+        plt.figure(figsize = (10,6))
+        plt.bar(ejex_nombres, ejey_presp, color = "steelblue")
+        plt.title("Grafico de Barras")
+        plt.ylabel("Presupuesto disponible")
+        plt.xlabel("Clientes")
+        plt.tight_layout()
+        plt.show()
+    except FileNotFoundError:
+        print("No se encontró el archivo para generar el grafico. Ingrese clientes.")
 
 def main():
+    """
+    Función principal para controlar el memú interactivo de la aplicación.
+    Utiliza try-except para comprobar que se ingresen opciones validas en 
+    el menú principal.
+    """
     inicializar_archivos()
     while True:
         print("\tSISTEMA DE CONSULTORIA GENERAL")
