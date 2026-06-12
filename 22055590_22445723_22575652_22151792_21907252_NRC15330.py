@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 import os
-import csv
 ARCHIVO_SERVICIOS="servicios.txt"
 ARCHIVO_CLIENTES="clientes.txt"
 
 class Cliente():
+
     """ 
-        Esta clase guarda informacion del cliente
+        Representa a un cliente del sistema de consultoría.
+    Almacena sus datos de contacto y el presupuesto disponible.
     """
 
     def __init__(self, rut, nombres, apellido_paterno, apellido_materno, telefono, email, empresa, presupuesto):
@@ -20,6 +21,12 @@ class Cliente():
         self.presupuesto = presupuesto
 
 class Servicio():
+
+    """
+        Representa un servicio de consultoría contratado.
+        Guarda los detalles operativos, el costo y el RUT del cliente asociado.
+    """
+
     def __init__(self, cod, nom_ser, area, consultor, duracion, costo, observacion, rut_cliente):
         self.codigo = cod
         self.nombre = nom_ser
@@ -124,45 +131,61 @@ def ingresar_servicio():
 
 def visualizar_cliente(archivo=ARCHIVO_CLIENTES):
     print("\n--- VISUALIZACIÓN DE CLIENTES ---")
-    with open(archivo, "r", encoding="utf-8") as f:
-        lineas = f.readlines()
-        if len(lineas) == 0:
-            print("No hay clientes registrados aún.")
-        else:
-            for linea in lineas:
-                datos = linea.strip().split(";")
-                if len(datos) == 8:
-                    print(f"Rut: {datos[0]}")
-                    print(f"Nombres: {datos[1]}")
-                    print(f"Apellido paterno: {datos[2]}")
-                    print(f"Apellido materno: {datos[3]}")
-                    print(f"Teléfono: {datos[4]}")
-                    print(f"Email: {datos[5]}")
-                    print(f"Empresa: {datos[6]}")
-                    print(f"Presupuesto disponible: {datos[7]}")
-                    print("") #Dejamos una línea en blanco para separar un cliente del siguiente
-
+    try:
+        with open(archivo, "r", encoding="utf-8") as f:
+            lineas = f.readlines()
+            if len(lineas) == 0:
+                print("No hay clientes registrados aún.")
+            else:
+                for linea in lineas:
+                    datos = linea.strip().split(";")
+                    if len(datos) == 8:
+                        print(f"Rut: {datos[0]}")
+                        print(f"Nombres: {datos[1]}")
+                        print(f"Apellido paterno: {datos[2]}")
+                        print(f"Apellido materno: {datos[3]}")
+                        print(f"Teléfono: {datos[4]}")
+                        print(f"Email: {datos[5]}")
+                        print(f"Empresa: {datos[6]}")
+                        print(f"Presupuesto disponible: {datos[7]}")
+                        print("") #Dejamos una línea en blanco para separar un cliente del siguiente
+    except FileNotFoundError:
+        print("El archivo de clientes no existe. Ingrese un clliente.")
 
 def visualizar_servicios(archivo=ARCHIVO_SERVICIOS):
-    print("\n--- VISUALIZACIÓN DE CLIENTES ---")
-    with open(archivo, "r", encoding="utf-8") as f:
-        lineas = f.readlines()
-        if len(lineas) == 0:
-            print("No hay clientes registrados aún.")
-        else:
+    print("\n========================================")
+    print("Visualización de los datos de las consultorías")
+    print("========================================\n")
+    try:
+        with open(archivo, "r", encoding="utf-8") as archivo:
+            lineas = archivo.readlines()
+            
+            if not lineas:
+                print("No hay servicios registrados en el sistema.")
+                return
+
             for linea in lineas:
                 datos = linea.strip().split(";")
                 if len(datos) == 8:
-                    print(f"Rut: {datos[0]}")
-                    print(f"Código del servicio: {datos[1]}")
-                    print(f"Nombre del servicio: {datos[2]}")
-                    print(f"Área de consultoría: {datos[3]}")
-                    print(f"Consultor responsable: {datos[4]}")
-                    print(f"Duración estimada: {datos[5]}")
-                    print(f"Costo del servicio: {datos[6]}")
-                    print(f"Observación: {datos[7]}")
-                    print("") #Se deja una línea en blanco para separar un servicio del siguiente
+                    rut, codigo, nombre, area, consultor, duracion, costo, observacion = datos
+                    print(f"Rut: {rut}")
+                    print(f"Código del servicio: {codigo}")
+                    print(f"Nombre del servicio: {nombre}")
+                    print(f"Área de consultoría: {area}")
+                    print(f"Consultor responsable: {consultor}")
+                    print(f"Duración estimada: {duracion}")
+                    print(f"Costo del servicio: {costo}")
+                    print(f"Observación: {observacion}")
+                    print("-" * 40) 
+                else:
+                    continue
+    except FileNotFoundError:
+        print("Error: El archivo de servicios no existe. Registre un servicio primero.")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado al leer el archivo: {e}")
 
+
+    
 def mostrar_grafico(archivo=ARCHIVO_CLIENTES):
     ejex_nombres = []
     ejey_presp = []
@@ -228,3 +251,11 @@ def main():
             print("Opcion no valida, intente otra vez con un numero entero (1-6).")
         
 main()
+
+
+#Integrantes:
+# Carla Campos - 22.055.590-9
+# Vicente Duarte - 22.151.792-K
+# Antonia Hernández - 22.445.723-5
+# Lukas Ortiz - 21.907.252-K
+# Antonia Roca - 22.575.652-K
