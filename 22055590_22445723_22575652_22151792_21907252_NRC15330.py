@@ -37,6 +37,54 @@ class Servicio():
         self.observacion = observacion
         self.rut_cliente = rut_cliente
 
+def validar_rut(rut):
+    """Verifica que el RUT tenga entre 9 y 10 dígitdos,
+    sea sin puntos, incluya el guión y termine
+    con un único digitdo verificador (entero o "K").
+    """
+    if len(rut)<9 or len(rut) >10:
+        print("RUT invalido.")
+        return False
+    if "." in rut:
+        print("El RUT debe ir sin puntos y con un guión.")
+        return False
+    if rut[-2] != "-":
+        print("El RUT debe contar con un único guion \"-\" antes del digito verificador.")
+        return False
+    numeros = rut[:-2]
+    verificador = rut[-1]
+
+    if not numeros.isdigit():
+        print("El RUT es invalido.")
+        return False
+    
+    if not (verificador.isdigit() or verificador.upper() == "K"):
+        print("Digito verificador es inválido.")
+        return False
+    
+    return True
+
+def validar_telefono(telefono):
+    """
+        Verifica que el numero de telefono ingresado tenga 9 numeros.
+    """
+    return len(telefono) == 9 and telefono.isdigit()
+
+def validar_mail(mail):
+    """
+        Verifiva que el correo ingresado contenga un @ y al menos un punto
+        después del @.
+    """
+    if mail.count("@") !=1:
+        print("Mail inválido.")
+        return False
+    usuario, dom = mail.split("@")
+
+    if not usuario or "." not in dom or dom.startswith("."):
+        print("Mail inválido.")
+        return False
+    return True
+
 def inicializar_archivos():
     """
         Crea los archivos de texto si no existen en el sistema.
@@ -56,12 +104,27 @@ def ingresar_cliente():
     """
     print("Ingrese los siguientes datos")
     #utilizamos el input para ingresar los datos del cliente
-    rut = input("Rut: ")
+    while True:
+        rut = input("Rut(ej: 12345678-9): ")
+        if validar_rut(rut) == True:
+            rut = rut.upper()
+            break
     nombres = input("Nombres: ")
     apellido_p = input("Apellido paterno: ")
     apellido_m = input("Apellido materno: ")
-    telefono = input("Teléfono: ")
-    email = input("Email: ")
+    
+    while True:
+        try:
+            telefono = input("Télefono (9 digitos): ")
+            if validar_telefono(telefono) == True:
+                break
+        except ValueError:
+            print("Debe ingresar un numero valido.")
+    
+    while True:
+        email = input("Email: ")
+        if validar_mail(email) == True:
+            break
     empresa = input("Empresa: ")
 
     while True:
@@ -92,17 +155,20 @@ def ingresar_servicio():
     #pasaremos a verificar que el usuario este registrado, para saber cuanto es su presupuesto
     rut= input("Ingrese el Rut del cliente que contrata el servicio:")
     cliente_encontrado = False
-    detec = open(ARCHIVO_CLIENTES, "r")
-    for linea in detec:
-        datos = linea.strip().split(";")
-        if len(datos) >= 8 and datos[0] == rut:
-                presupuesto = float(datos[7])
-                cliente_encontrado = True
-                break
-    if not cliente_encontrado:
-        print("Error: El Rut del cliente no existe en el sistema.")
+    try:
+        with open(ARCHIVO_CLIENTES, "r", encoding="utf-8") as detec:
+            for linea in detec:
+                datos = linea.strip().split(";")
+                if len(datos) >= 8 and datos[0] == rut:
+                        presupuesto = float(datos[7])
+                        cliente_encontrado = True
+                        break
+            if not cliente_encontrado:
+                print("Error: El Rut del cliente no existe en el sistema.")
+                return
+    except FileNotFoundError:
+        print("El archivo de clientes no existe. Se necesita registrar uno antes.")
         return
-    detec.close()
     
     #el usuario debera ingresar los datos del servicio que quiere costear
     cod = input("Introduzca el Código del servicio: ")
@@ -133,10 +199,10 @@ def ingresar_servicio():
 
     nuevo_servicio = Servicio(cod, nom_ser, area, consultor, duracion, costo1, observacion, rut)
     
-    # 2. Armamos la línea de texto extrayendo cada atributo del objeto
+    # Armamos la línea de texto extrayendo cada atributo del objeto
     linea_texto = f"{nuevo_servicio.codigo};{nuevo_servicio.nombre};{nuevo_servicio.area};{nuevo_servicio.consultor};{nuevo_servicio.duracion};{nuevo_servicio.costo};{nuevo_servicio.observacion};{nuevo_servicio.rut_cliente}\n"
     
-    # 3. Guardamos esa línea directamente en el archivo
+    # Guardamos esa línea directamente en el archivo
     with open(ARCHIVO_SERVICIOS, "a", encoding="utf-8") as f:
         f.write(linea_texto)
     print("¡Servicio contratado y registrado con éxito!")
@@ -288,7 +354,8 @@ def main():
         except ValueError:
             print("Opcion no valida, intente otra vez con un numero entero (1-6).")
         
-main()
+if __name__ == "__main__":
+    main()
 
 
 #Integrantes:
